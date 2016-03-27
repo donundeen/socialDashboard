@@ -46,6 +46,10 @@ $(function(){
 	var instagramItemStack = [];
 	var lastInstagramID = "0";
 
+        var usedTwitterIds = {};
+        var usedInstagramIds = {};
+
+
 	var placedItems = [];
 
 	var itemTimingMS = 5000;
@@ -53,7 +57,7 @@ $(function(){
 	var maxPlacedItems = 20;
 	var stackTimingMS = itemTimingMS * maxStackSize;
 
-	var searchTerms = ["metmuseum","metmedialab"];
+	var searchTerms = ["boomhifive","donundeen","creativemuseum","metmedialab"];
 
 	$.each(searchTerms, function(index, term){
 		itemStacks[term + "__ig"] = [];
@@ -76,7 +80,7 @@ $(function(){
 			var url = "?action=searchTwitter";
 			$.ajax({
 				url : url ,
-				data : {searchTerms: term, sinceId: 0, prefs: prefData},
+				data : {searchTerms: term, sinceId: lastTwitterID, prefs: prefData},
 				//type : "PUT",
 				contentType : 'json',
 				// processData : false,
@@ -104,15 +108,15 @@ $(function(){
 			var url = "?action=searchInstagramTag";
 			$.ajax({
 				url : url ,
-				data : {tag: term, sinceId: 0, prefs: prefData},
+				data : {tag: term, sinceId: lastInstagramID, prefs: prefData},
 				//type : "PUT",
 				contentType : 'json',
 				// processData : false,
 				success : function(results, status){
 				  console.log("got IG results");
 				  var results = JSON.parse(results);
-				  console.log(results);
-	//			  lastTwitterID = results.results.search_metadata.max_id_str;
+//				  console.log(results);
+				  lastInstagramID = results.results.search_metadata.max_id_str;
 				  processInstagramStack(term, results);
 
 				},
@@ -135,6 +139,11 @@ $(function(){
 //			console.log(date);
 //			console.log(date.toDateString());
 
+                        if(usedTwitterIds[status.id_str]){
+                                return true;
+                        }
+                        usedTwitterIds[status.id_str] = status;
+console.log(usedTwitterIds);
 			var item = {
 				time : date.toDateString(),
 				text : status.text,
@@ -179,6 +188,7 @@ $(function(){
 		var keys = Object.keys(itemStacks);
 		var key = keys[iterator];
 		var stack = itemStacks[key];
+//console.log(stack);
 
 		if(stack){
 			loadNewItemFromStack(key, stack);
@@ -197,7 +207,14 @@ $(function(){
 		}
 	}
 
+
+        var placedItemIds = {};
 	var addNewItem = function(item){
+
+		if(placedItemIds[item.id]){
+			return;
+		}
+		placedItemIds[item.id] = item;
 		placeItem(item);
 
 		if(placedItems.length > maxPlacedItems){
@@ -217,7 +234,7 @@ $(function(){
 			imgUrl = item.imgUrl;
 			imgString = "<img width='100%' src='"+imgUrl+"'/>";
 		}
-		console.log(item);
+//		console.log(item);
 		var text = item.text;
 		var item_class="";
 		var sizer_class= "item";
@@ -225,7 +242,7 @@ $(function(){
 			//sizer_class = "grid-sizer";
 			first = false;
 		}
-		item = $("<div class='"+sizer_class+" "+item_class+"'>"+imgString+"<span class='caption'>"+text+"</span>&nbsp;<span class='metadata'>"+item.source+": "+ item.user+"</span>&nbsp;<span class='time'>"+item.time+"</span></div>").hide();
+		item = $("<div class='"+sizer_class+" "+item_class+"'>"+imgString+"<span class='caption'>"+text+"</span>&nbsp;<span class='metadata'>"+item.source+": "+ item.user+"</span>&nbsp;<span class='time'>"+item.time+" : " + item.id+"</span></div>").hide();
 		$(".caption", item).linkify(function (links){ $(links).attr("target", "_blank"); });
 		$("#container").prepend(item);
 		imagesLoaded(item, function() {
@@ -262,7 +279,7 @@ $(function(){
 			var terms = searchTerms.join(", ");
 
 			itemLoopStopped = true;
-			var menu = $("<div class='item menu'><span class='menuheader'>enter comma-separated list of keywords for socal search:</span><form><textarea class='termsList' rows=5 cols=20>"+terms+"</textarea><BR><span class='menuclose'><i class='fa fa-check-circle' /></span></div>");
+			var menu = $("<div class='item menu'><span class='menuheader'>enter comma-separated list of keywords for socal search:</span><form><textarea class='termsList' rows=5 cols=20>"+terms+"</textarea><BR><span class='menuclose'><i class='fa fa-check-circle' /></span><BR><a href='privacy.html'>Privacy Policy</a></div>");
 			$("#container").prepend(menu);
 			msnry.prepended(menu);
 			$(".menuclose").click(function(evt){
