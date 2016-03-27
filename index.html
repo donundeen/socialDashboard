@@ -242,7 +242,7 @@ console.log(usedTwitterIds);
 			//sizer_class = "grid-sizer";
 			first = false;
 		}
-		item = $("<div class='"+sizer_class+" "+item_class+"'>"+imgString+"<span class='caption'>"+text+"</span>&nbsp;<span class='metadata'>"+item.source+": "+ item.user+"</span>&nbsp;<span class='time'>"+item.time+" : " + item.id+"</span></div>").hide();
+		item = $("<div class='"+sizer_class+" "+item_class+"'>"+imgString+"<span class='caption'>"+text+"</span>&nbsp;<span class='metadata'>"+item.source+": "+ item.user+"</span>&nbsp;<span class='time'>"+item.time+"</span></div>").hide();
 		$(".caption", item).linkify(function (links){ $(links).attr("target", "_blank"); });
 		$("#container").prepend(item);
 		imagesLoaded(item, function() {
