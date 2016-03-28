@@ -159,6 +159,11 @@ function urlObject(options) {
 	        searchTerms = queryParams.searchterms.split(',');
 	}
 
+	var item_sizeclass = "normal";
+	if(queryParams.fontsize){
+	    item_sizeclass = queryParams.fontsize;
+	}
+
 	$.each(searchTerms, function(index, term){
 		itemStacks[term + "__ig"] = [];
 		itemStacks[term + "__tw"] = [];
@@ -342,7 +347,7 @@ console.log(usedTwitterIds);
 			//sizer_class = "grid-sizer";
 			first = false;
 		}
-		item = $("<div class='"+sizer_class+" "+item_class+"'>"+imgString+"<span class='caption'>"+text+"</span>&nbsp;<span class='metadata'>"+item.source+": "+ item.user+"</span>&nbsp;<span class='time'>"+item.time+"</span></div>").hide();
+		item = $("<div class='"+sizer_class+" "+item_class+" "+ item_sizeclass+"'>"+imgString+"<span class='caption'>"+text+"</span>&nbsp;<span class='metadata'><BR>"+item.source+": "+ item.user+"</span>&nbsp;<span class='time'>"+item.time+"</span></div>").hide();
 		$(".caption", item).linkify(function (links){ $(links).attr("target", "_blank"); });
 		$("#container").prepend(item);
 		imagesLoaded(item, function() {
@@ -514,6 +519,8 @@ img {
     font-size: 30px;
 }
 
+
+
 .overlay .description {
     position: absolute;
     bottom: 0;
@@ -544,7 +551,21 @@ a {
 	width: 15px;
 }
 
+.item.large {
+font-size : 1.2em;
+}
 
+.item.small {
+font-size: .9em;
+}
+
+.item.normal {
+ font-size: 1em;
+}
+
+.item.jumbo {
+font-size : 2em;
+}
 </style>
 </head>
 <body>
